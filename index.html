@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Algo</title>
+		<style>
+			body, a {
+				font-family: "Source Code Pro", monospace;
+				background-color: #222;
+				color: #1EC40D;
+			}
+			h1 {
+				text-align: center;
+				padding-top: 4%;
+				padding-bottom: 2%;
+			}
+			h3 {
+				text-decoration: underline;
+			}
+			code {
+				font-family: "Source Code Pro", monospace;
+				white-space: pre;
+			}
+			#contents {
+				padding: 0 5% 4% 10%;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<h1>* Algorithms revision *</h1>
+
+		<div id="contents">
+			<h2>Contents</h2>
+			<ol>
+				<li><a href="#even">Check if number is even</a></li>
+				<li><a href="#prime">Check if number is prime</a></li>
+				<li><a href="#all-primes">Find all primes</a></li>
+				<li><a href="#power">X power N</a></li>
+				<li><a href="#factorial">Factorial</a></li>
+				<li><a href="#fibonacci">Fibonacci</a></li>
+				<li><a href="#search">Search</a></li>
+				<li>
+					<a href="#str-search">String search</a>
+					<ul>
+						<li><a href="#simple">Simple</a></li>
+						<li><a href="#kmp">Knuth–Morris–Pratt</a></li>
+						<li><a href="#bm">Boyer-Moore</a></li>
+					</ul>
+				</li>
+				<li>
+					<a href="#sort">Sorting</a>
+					<ul>
+						<li><a href="#insert">Insertion sort</a></li>
+						<li><a href="#quick">Quick sort</a></li>
+						<li><a href="#merge">Merge sort</a></li>
+					</ul>
+				</li>
+			</ol>
+		</div>
+
+		<h3 id="even">1. Check if number is even</h3>
+		<p><b>Idea:</b> use bitwise AND operator to check if the least significant bit (right-most bit) is 1. This means the number is odd.</p>
+<code>
+	if (n & 1) // n is odd
+</code>
+		<p>For example, 13 = 1101 is represented as the sum of powers of two multiplied by the corresponding ones or zeros: <br>1101 = 1*2^3 + 1*2^2 + 0*2^1 + 1*2^0 = 8 + 4 + 0 + 1 = 13.<br>The bottom line is that 2 to any degree, except 0, is an even number. The sum of even numbers is an even number. From this we conclude that only the least significant bit affects parity.</p>
+		
+		<h3 id="prime">2. Check if number is prime</h3>
+		<p>A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.</p>
+		<p><b>Idea:</b> loop from 2 until our number n minus 1 because n will be divisible by itself and 1. If the remainder of n with the current loop value i is 0 then it is not prime.</p>
+<code>
+	for (var i = 2; i < n; i++) {
+		if (n % i == 0) return false;
+		return n > 1;
+	}
+</code>
+		<p><b>Better idea:</b> trial division method - if we don't find a divisor of n after checking up to square root of n, then n must be prime. If n is divisible by some number x, then n = x * y and if y were smaller than x, n would have been detected earlier as being divisible by y or by a prime factor of y.</p>
+		<p>
+			n = x * y<br>
+			x <= y<br>
+			x * x <= x * y<br>
+			x^2 <= n<br>
+			x <= sqrt(n)<br>
+		</p>
+<code>
+	for (var i = 2; i <= Math.sqrt(n); i++) {
+		if (n % i == 0) return false;
+		return n > 1;
+	}
+</code>
+
+		<h3 id="all-primes">3. Find all primes</h3>
+		<p>Sieve of Eratosthenes - simple, ancient algorithm for finding all prime numbers up to a given limit.<br><b>Idea:</b> iteratively mark as composite (i.e., not prime) the multiples of each prime, starting with the multiples of 2.</p>
+<code>
+	function allPrimes(n) {
+		var primes = [];
+		var result = [];
+
+		for (var i = 2; i < n; i++) {
+			primes[i] = true;
+		}
+
+		var limit = Math.sqrt(n);
+
+		for (var i = 2; i < limit; i++) {
+			if (primes[i] === true) {
+				for (var j = i * i; j < n; j += i) {
+					primes[j] = false;
+				}
+			}
+		}
+
+		for (var i = 2; i < n; i++) {
+			if (primes[i] === true) {
+				result.push(i);
+			}
+		}
+
+		return result;
+	}
+</code>
+
+		<h3 id="power">4. X power N</h3>
+		<p><b>Idea:</b> 2^0 = 1<br>2^3 = 1*2*2*2 = 8<br>2^-3 = 1/2/2/2 = 0.125</p>
+<code>
+	function power(base, exp) {
+		var result = 1;
+		if (exp > 0) {
+			while(exp--) result *= base;
+		} else {
+			while(exp++) result /= base;
+		}
+		return result;
+	}
+</code>
+
+		<h3 id="factorial">5. Factorial</h3>
+		<p><b>Idea:</b> 5! = 5*4*3*2*1 = 120; 0! = 1</p>
+		<p>Recursive:</p>
+<code>
+	function fact(n) {
+		if (n > 0) return n * fact(n - 1);
+		else if (n == 0) return 1;
+		else return;
+	}
+</code>
+		<p>Non-recursive:</p>
+<code>
+	function factNonRecur(n) {
+		if (n > 0) {
+			var result = n;
+			while (n-- > 2) result *= n;
+			return result;
+		}
+		else if (n == 0) return 1;
+		else return;
+	}
+</code>
+
+		<h3 id="fibonacci">6. Fibonacci</h3>
+		<p>Task: find n-th number in Fibonacci sequence.</p>
+		<p><b>Idea:</b> f = 1, 1, 2, 3, 5, 8...; f_n = f_n-1 + f_n-2</p>
+		<p>Recursive:</p>
+<code>
+	function fib(n) {
+		if (n > 1) {
+			return fib(n - 1) + fib(n - 2);
+		}
+		else if (n == 1) return 1;
+		else if (n == 0) return 0;
+		else return;
+	}
+</code>
+		<p>Non-recursive:</p>
+<code>
+	function fibNonRecur(n) {
+		var result = 1, current = 1, prev = 0;
+		var temp;
+		
+		while (current < n) {
+			temp = result;
+			result += prev;
+			prev = temp;
+			current++;
+		}
+
+		return result; 
+	}
+</code>
+		<p>Better:</p>
+<code>
+	function fibBetter(n) {
+		var a = 1, b = 1, c;
+
+		for (var i = 3; i <= n; i++) {
+			c = a + b;
+			a = b;
+			b = c;
+		}
+
+		return b;
+	}
+</code>
+
+		<p>Task: find first n numbers of Fibonacci sequence.</p>
+<code>
+	function fibSeq(n) {
+		var fibArr = [];
+
+		if (n < 3) {
+			for (var i = 0; i < n; i++) {
+				fibArr[i] = 1;
+			}
+		} else {
+			for (var i = 0; i < 2; i++) {
+				fibArr[i] = 1;
+			}
+			for (var i = 2; i < n; i++) {
+				fibArr[i] = fibArr[i-1] + fibArr[i-2];
+			}
+		}
+
+		return fibArr;
+	}
+</code>
+		<p>Better:</p>
+<code>
+	function fibSeqBetter(n) {
+		var fibArr = [];
+
+		for (var i = 0; i < n; i++) {
+			fibArr.push((i < 2) ? 1 : fibArr[i-1] + fibArr[i-2]);
+		}
+
+		return fibArr;
+	}
+</code>
+
+		<h3 id="search">7. Search</h3>
+		<p><b>Linear:</b></p>
+<code>
+	var arr = [100, 10, -5, 2, 13, 0, 1];
+	var x = 2; // value to search in arr
+
+	function searchLinear(arr, x) {
+		for (var i = 0; i < arr.length; i++) {
+			if (arr[i] === x) return i; // found at position i
+		}
+		return -1; // not found
+	}
+</code>
+		<p>Optimized, using barrier:</p>
+<code>
+	function searchLinearOpt(arr, x) {
+		var i = 0;
+		arr.push(x); // using barrier
+
+		while (arr[i] !== x) i++;
+
+		return (i == arr.length-1) ? -1 : i;
+	}
+</code>
+		<p><b>Binary:</b></p>
+<code>
+	var arr = [100, 10, 3, 12, -50, 18, 4];
+	var x = 3; // number to search in arr
+
+	// working with sorted array
+	arrSorted = arr.sort(function(a, b) { return a - b; });
+	// arrSorted = [-50, 1, 2, 5, 10, 18, 100]
+
+	function binarySearch(arr, x) {
+		var l = 0; // left border
+		var r = arr.length; // right border
+		var m; // middle position
+
+		while (l < r) {
+			m = Math.floor((l + r) / 2);
+			if (arr[m] < x) l = m + 1;
+			else r = m;
+		}
+
+		return (l == r && arr[l] != x) ? -1 : l;
+	}
+</code>
+
+		<h3 id="str-search">8. String search</h3>
+		<p id="simple"><b>Simple:</b></p>
+<code>
+	var str = "Hoola-Hoola girls like Hooligans.";
+	var pat = "Hooligans"; // search pattern
+
+	function search(str, pat) {
+		var sl = str.length;
+		var pl = pat.length;
+		var i = 0; // index, runs through str chars
+		var j = 0; // index, runs through pat chars
+
+		while (true) {
+			if (i <= sl - pl && j < pl && str[i+j] === pat[j]) j++;
+			else if (i <= sl - pl && j < pl) { i++;	j = 0; }
+			else break;
+		}
+
+		return (i > sl-pl) ? -1 : i;
+	}
+</code>
+		<p id="kmp"><b>Knuth–Morris–Pratt (KMP):</b></p>
+<code>
+	var str = "Hoola-Hoola girls like Hooligans.";
+	var pat = "ool"; // search pattern
+
+	// make a prefix table where table[i] will store
+	// the length of the longest prefix
+	// (which is also a suffix) of the pattern pat[0..i]
+	function makeTable(pat) {
+		var table = [0]; // array with element = 0
+		var p = 0; // prefix index
+		var s = 1; // suffix index
+
+		while (s < pat.length) {
+			if (pat[p] === pat[s]) {
+				table[s] = p + 1;
+				s++;
+				p++;
+			} else if (p === 0) {
+				table[s] = 0;
+				s++;
+			} else {
+				p = table[p - 1];
+			}
+		}
+
+		return table;
+	}
+
+	// search for a match and return all positions
+	// where 'pat' was found in 'str'
+	function searchKMP(str, pat) {
+		var matchesArr = []; // positions where mathes were found
+		var s = 0; // string 'str' index
+		var p = 0; // pattern 'pat' index
+
+		const table = makeTable(pat);
+
+		while (s < str.length) {
+			if (str[s] === pat[p]) { // match
+				if (p === pat.length - 1) {
+					matchesArr.push((s - pat.length) + 1);
+				}
+				p++;
+				s++;
+			} else if (p > 0) {
+				p = table[p - 1];
+			} else {
+				p = 0;
+				s++;
+			}
+		}
+
+		return (matchesArr) ? matchesArr : -1;
+	}
+</code>
+		<p id="bm"><b>Boyer-Moore (BM):</b></p>
+<code>
+	var str = "Hoola-Hoola girls like Hooligans.";
+	var pat = "Hooligan";
+
+	function searchBM(str, pat) {
+		var position = 0; // position along str
+		var offset = str.length - pat.length;
+		var last = pat.length - 1;
+		var badMatchTable = [];
+
+		if (last < 0) return 0;
+
+		// Generate the bad match table, which is the location of offsets
+		// to jump forward when a comparison fails
+		for (var i = 0; i < last; i++) {
+			badMatchTable[pat[i]] = last - i;
+		}
+		// search for the pattern
+		while (position <= offset) {
+			// Search right-to-left checking if the current position at 
+			// pat and str match. If they do, rewind 1, repeat, and if we 
+			// eventually match the first character, return the position.
+			for (var i = last; pat[i] === str[i+position]; i--) {
+				if (i === 0) return position;
+			}
+
+			position += badMatchTable[str[position+last]] || last || 1;
+		}
+
+		return -1;
+	}
+</code>
+
+		<h3 id="sort">9. Sorting</h3>
+		<p id="insert"><b>Insertion sort:</b> The algorithm consists of inserting one element at a time into the previously sorted part of the array, moving higher ranked elements up if necessary. To start off, the first (or smallest, or any arbitrary) element of the unsorted array is considered to be the sorted part.</p>
+<code>
+	function insertionSort(arr) {
+		var key, j;
+		// 1st element in unsorted part will be 1st element in sorted part
+		for (var i = 1; i < arr.length; i++) {
+			key = arr[i]; // element we are moving into the sorted part
+			j = i; // index in unsorted part
+			// iterate through sorted part from right to left;
+			// stop iterating when element to the left of current position
+			// is less than the element we are trying to insert
+			while (j > 0 && arr[j-1] > key) {
+				// shift each element one space to the right
+				arr[j] = arr[j-1];
+				j--; // update counter
+			}
+			arr[j] = key; // insert element into the sorted part
+		}
+	}
+</code>
+		<p id="quick"><b>Quick sort:</b> It is a divide and conquer algorithm. 1. Pick an element, called a pivot, from the array. 2. Partitioning: reorder the array so that all elements with values less than the pivot come before the pivot, while all elements with values greater than the pivot come after it (equal values can go either way). After this partitioning, the pivot is in its final position. 3. Recursively apply the above steps to the sub-array of elements with smaller values and separately to the sub-array of elements with greater values.</p>
+<code>
+	function quickSort(arr, left = 0, right = arr.length-1) {
+		var i = left;
+		var j = right;
+		var temp;
+		// reference element *
+		var pivot = arr[Math.floor(left + (right - left) / 2)];
+		do {
+			while (arr[i] < pivot) i++;
+			while (pivot < arr[j]) j--;
+			if (i <= j) {
+				// swap
+				temp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = temp;
+				// increment
+				i++;
+				j--;
+			}
+		} while (i <= j);
+		if (left < j) quickSort(arr, left, j);
+		if (i < right) quickSort(arr, i, right);
+	}
+	// * You shouldn't compute the middle point as (left+right)/2.
+	// If the array is very large, the result of "left+right" may overflow and become negative.
+	// The proper way of choosing the midpoint pivot is: "left + (right-left)/2"
+	// which is mathematically equivalent but immune to overflow.
+</code>
+		<p id="merge"><b>Merge sort:</b> It is a divide and conquer algorithm. 1. Divide an array into n subarrays, each containing one element (an array of one element is considered sorted). 2. Repeatedly merge subarrays to produce new sorted subarrays until there is only one subarray remaining.</p>
+
+		<script>
+			var arr = [4, 65, 2, -31, 0, 99, 83, 782, 1];
+
+			function mergeSort(arr) {
+				
+			}
+
+			// mergeSort(arr);
+			console.log(arr);
+		</script>
+
+	</body>
+</html>
