@@ -18,6 +18,12 @@
 			h3 {
 				text-decoration: underline;
 			}
+			a {
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
 			code {
 				font-family: "Source Code Pro", monospace;
 				white-space: pre;
@@ -55,6 +61,7 @@
 						<li><a href="#insert">Insertion sort</a></li>
 						<li><a href="#quick">Quick sort</a></li>
 						<li><a href="#merge">Merge sort</a></li>
+						<li><a href="#heap">Heap sort</a></li>
 					</ul>
 				</li>
 			</ol>
@@ -448,16 +455,55 @@
 	// which is mathematically equivalent but immune to overflow.
 </code>
 		<p id="merge"><b>Merge sort:</b> It is a divide and conquer algorithm. 1. Divide a list into n sublists, each containing one element (a list of one element is considered sorted). 2. Repeatedly merge sublists to produce new sorted sublists until there is only one sublist remaining.</p>
+<code>
+	function mergeSort(arr) {
+		if (arr.length < 2) return arr; // terminal case
+
+		var middle = Math.floor(arr.length / 2);
+		var left = arr.slice(0, middle); // left subarray
+		var right = arr.slice(middle); // right subarray
+
+		return merge(mergeSort(left), mergeSort(right));
+	}
+
+	function merge(left, right) {
+		var result = [];
+		var iLeft = 0; // index in left subarray
+		var iRight = 0; // index in right subarray
+
+		while (iLeft < left.length && iRight < right.length) {
+			if (left[iLeft] < right[iRight]) {
+				result.push(left[iLeft]);
+				iLeft++;
+			} else {
+				result.push(right[iRight]);
+				iRight++;
+			}
+		}
+		// fill the leftovers
+		while (iLeft < left.length) {
+			result.push(left[iLeft]);
+			iLeft++;
+		}
+		while (iRight < right.length) {
+			result.push(right[iRight]);
+			iRight++;
+		}
+		return result;
+		// or instead of the last 2 while loops
+		// return result.concat(left.slice(iLeft)).concat(right.slice(iRight));
+	}
+</code>
+		<p id="heap"><b>Heap sort:</b> It is</p>
 
 		<script>
 			var arr = [4, 65, 2, -31, 0, 99, 83, 782, 1];
 
-			function mergeSort(arr) {
+			function heapSort(arr) {
 				
 			}
 
-			// mergeSort(arr);
-			console.log(arr);
+			// console.log(heapSort(arr));
 		</script>
 
 	</body>
