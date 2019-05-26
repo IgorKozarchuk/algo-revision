@@ -58,10 +58,11 @@
 				<li>
 					<a href="#sort">Sorting</a>
 					<ul>
+						<li><a href="#select">Selection sort</a></li>
 						<li><a href="#insert">Insertion sort</a></li>
+						<li><a href="#heap">Heap sort</a></li>
 						<li><a href="#quick">Quick sort</a></li>
 						<li><a href="#merge">Merge sort</a></li>
-						<li><a href="#heap">Heap sort</a></li>
 					</ul>
 				</li>
 			</ol>
@@ -314,6 +315,7 @@
 		return (i > sl-pl) ? -1 : i;
 	}
 </code>
+
 		<p id="kmp"><b>Knuth–Morris–Pratt (KMP):</b></p>
 <code>
 	var str = "Hoola-Hoola girls like Hooligans.";
@@ -370,6 +372,7 @@
 		return (matchesArr) ? matchesArr : -1;
 	}
 </code>
+
 		<p id="bm"><b>Boyer-Moore (BM):</b></p>
 <code>
 	var str = "Hoola-Hoola girls like Hooligans.";
@@ -405,6 +408,29 @@
 </code>
 
 		<h3 id="sort">9. Sorting</h3>
+		<p id="select"><b>Selection sort:</b> First find the smallest element in the array and exchange it with the element in the first position, then find the second smallest element and exchange it with the element in the second position, and continue in this way until the entire array is sorted.</p>
+<code>
+	function selectionSort(arr) {
+		// i < arr.length-1 because last element
+		// will be already sorted
+		for (var i = 0; i < arr.length - 1; i++) {
+			// assume first element is min
+			var minIndex = i;
+			// check elements after i to find the smallest
+			for (var j = i+1; j < arr.length; j++) {
+				// if element is less then min it is the new minimum
+				if (arr[j] < arr[minIndex]) minIndex = j;
+			}
+			// swap min element with the leftmost unsorted element 
+			if (minIndex != i) {
+				var temp = arr[i];
+				arr[i] = arr[minIndex];
+				arr[minIndex] = temp;
+			}
+		}
+	}
+</code>
+
 		<p id="insert"><b>Insertion sort:</b> The algorithm consists of inserting one element at a time into the previously sorted part of the array, moving higher ranked elements up if necessary. To start off, the first (or smallest, or any arbitrary) element of the unsorted array is considered to be the sorted part.</p>
 <code>
 	function insertionSort(arr) {
@@ -425,6 +451,65 @@
 		}
 	}
 </code>
+
+		<p id="heap"><b>Heap sort:</b> The basic idea is to turn the array into a heap (binary tree structure) with max element in the root. Then repeatedly remove the max element from the heap, building the sorted list from back to front.</p>
+<code>
+	function heapSort(arr) {
+		buildMaxHeap(arr); // build max heap
+		var last = arr.length - 1; // last element
+		// continue heap sorting until we have
+		// only one element left in the array
+		while (last > 0) {
+			swap(arr, 0, last); // put max in the end
+			heapify(arr, 0, last);
+			last--;
+		}
+	}
+
+	// build max heap
+	function buildMaxHeap(arr) {
+		var i = Math.floor(arr.length / 2 - 1);
+		
+		while (i >= 0) {
+			heapify(arr, i, arr.length);
+			i--;
+		}
+	}
+
+	// move (sift) one element at a time
+	// down to its correct location in the heap
+	function heapify(heap, i, max) {
+		var parent, leftChild, rightChild;
+
+		while (i < max) {
+			parent = i; // index of parent
+			leftChild = 2*i + 1; // index of left child
+			rightChild = leftChild + 1; // index of right child
+
+			if (leftChild < max && heap[leftChild] > heap[parent]) {
+				parent = leftChild;
+			}
+
+			if (rightChild < max && heap[rightChild] > heap[parent]) {
+				parent = rightChild;
+			}
+
+			if (parent == i) return;
+
+			swap(heap, i, parent);
+
+			i = parent;
+		}
+	}
+
+	// swap elements
+	function swap(arr, i, j) {
+		var temp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = temp;
+	}
+</code>
+
 		<p id="quick"><b>Quick sort:</b> It is a divide and conquer algorithm. 1. Pick an element, called a pivot, from the array. 2. Partitioning: reorder the array so that all elements with values less than the pivot come before the pivot, while all elements with values greater than the pivot come after it (equal values can go either way). After this partitioning, the pivot is in its final position. 3. Recursively apply the above steps to the sub-array of elements with smaller values and separately to the sub-array of elements with greater values.</p>
 <code>
 	function quickSort(arr, left = 0, right = arr.length-1) {
@@ -449,11 +534,13 @@
 		if (left < j) quickSort(arr, left, j);
 		if (i < right) quickSort(arr, i, right);
 	}
+
 	// * You shouldn't compute the middle point as (left+right)/2.
 	// If the array is very large, the result of "left+right" may overflow and become negative.
 	// The proper way of choosing the midpoint pivot is: "left + (right-left)/2"
 	// which is mathematically equivalent but immune to overflow.
 </code>
+
 		<p id="merge"><b>Merge sort:</b> It is a divide and conquer algorithm. 1. Divide a list into n sublists, each containing one element (a list of one element is considered sorted). 2. Repeatedly merge sublists to produce new sorted sublists until there is only one sublist remaining.</p>
 <code>
 	function mergeSort(arr) {
@@ -494,17 +581,6 @@
 		// return result.concat(left.slice(iLeft)).concat(right.slice(iRight));
 	}
 </code>
-		<p id="heap"><b>Heap sort:</b> It is</p>
-
-		<script>
-			var arr = [4, 65, 2, -31, 0, 99, 83, 782, 1];
-
-			function heapSort(arr) {
-				
-			}
-
-			// console.log(heapSort(arr));
-		</script>
 
 	</body>
 </html>
